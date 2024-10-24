@@ -36,10 +36,6 @@ public class TennisGame {
         return;
       }
       scoreHistoryList.addLast(new ScoreHistory(playerA.getScore(), playerB.getScore()));
-      /*
-       * System.out.println(String.format(PLAYER_A_PLAYER_B, playerA.getScore().getScoreDisplayed(),
-       * playerB.getScore().getScoreDisplayed()));
-       */
     });
 
     dumpResult(matchResult);
