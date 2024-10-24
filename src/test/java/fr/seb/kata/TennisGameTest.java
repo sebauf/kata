@@ -2,10 +2,28 @@ package fr.seb.kata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TennisGameTest {
+
+  private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+  private final PrintStream systemOut = System.out;
+
+  @BeforeEach
+  public void redirectStrandardOutput() {
+    System.setOut(new PrintStream(outContent));
+  }
+
+  @AfterEach
+  public void restoreStrandardOutput() {
+    System.setOut(new PrintStream(systemOut));
+  }
+
 
   @Test
   void testClassicGame() {
@@ -75,6 +93,40 @@ public class TennisGameTest {
     var expectedMatchResult = new MatchResult(List.of(scoreRound1), null);
     var matchResult = new TennisGame().play("X");
     assertEquals(matchResult, expectedMatchResult);
+  }
+
+  @Test
+  void testOutputWithWinner() {
+    String expected = """
+        Player A : 15 / Player B : 0
+        Player A : 30 / Player B : 0
+        Player A : 40 / Player B : 0
+        Player A : 40 / Player B : 15
+        Player A : 40 / Player B : 30
+        Player A : 40 / Player B : 40
+        Player A : ADVANTAGE / Player B : 40
+        Player A : 40 / Player B : 40
+        Player A : 40 / Player B : ADVANTAGE
+        Player B wins the game
+        """.replace("\n", "\r\n");
+    new TennisGame().play("AAABBBABBB");
+    assertEquals(expected, outContent.toString());
+  }
+
+  @Test
+  void testOutputWithoutWinner() {
+    String expected = """
+        Player A : 15 / Player B : 0
+        Player A : 30 / Player B : 0
+        Player A : 40 / Player B : 0
+        Player A : 40 / Player B : 15
+        Player A : 40 / Player B : 30
+        Player A : 40 / Player B : 40
+        Player A : ADVANTAGE / Player B : 40
+        Player A : 40 / Player B : 40
+        """.replace("\n", "\r\n");
+    new TennisGame().play("AAABBBAB");
+    assertEquals(expected, outContent.toString());
   }
 
 }
